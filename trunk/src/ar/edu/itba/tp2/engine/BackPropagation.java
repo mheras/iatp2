@@ -144,7 +144,7 @@ public class BackPropagation {
 			this.propagateInputSignal();
 
 			/* Stage 4: Compute deltas for the output layer. */
-			double[] deltasOutputLayer = this.ComputeDeltasOutputLayer(currentPattern
+			double[] deltasOutputLayer = this.computeDeltasOutputLayer(currentPattern
 					.getOutput());
 			
 
@@ -153,7 +153,7 @@ public class BackPropagation {
 
 	}
 
-	private double[] ComputeDeltasOutputLayer(double[] correctOutputs) {
+	private double[] computeDeltasOutputLayer(double[] correctOutputs) {
 		double[] result = new double[this.nOutputs];
 		Perceptron[] NNoutputs = this.perceptronMatrix[this.nHiddenLayers + 1];
 		for (int i = 0; i < this.nOutputs; i++) {
