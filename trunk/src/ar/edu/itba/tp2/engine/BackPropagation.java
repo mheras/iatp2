@@ -19,17 +19,19 @@ public class BackPropagation {
 	private Integer nOutputs;
 	private Integer nHiddenLayers;
 	private Integer nNeuronsInHiddenLayers;
+	private double learningRate;
 	private double[][][] weights;
 	private Perceptron[][] perceptronMatrix;
 
 	public BackPropagation(Integer nInputs, Integer nOutputs,
 			Integer nHiddenLayers, Integer nNeuronsInHiddenLayers,
-			SigmoidFunction activationFunction) {
+			double learningRate, SigmoidFunction activationFunction) {
 		this.nInputs = nInputs;
 		this.nOutputs = nOutputs;
 		this.nHiddenLayers = nHiddenLayers;
 		this.nNeuronsInHiddenLayers = nNeuronsInHiddenLayers;
 		this.activationFunction = activationFunction;
+		this.learningRate = learningRate;
 		weights = new double[nHiddenLayers + 1][][];
 		perceptronMatrix = new Perceptron[nHiddenLayers + 2][];
 
@@ -83,6 +85,16 @@ public class BackPropagation {
 	 */
 	private void initializeWeightMatrix() {
 
+		if (this.nHiddenLayers == 0) {
+			this.weights[0] = new double[this.nInputs + 1][this.nOutputs];
+			for (int i = 0; i < this.nInputs + 1; i++) {
+				for (int j = 0; j < this.nOutputs; j++) {
+					this.weights[0][i][j] = randomWeight();
+				}
+			}
+			return;
+		}
+
 		for (int i = 0; i < this.nHiddenLayers + 1; i++) {
 			/* Weights between the input layer and the first hidden layer. */
 			if (i == 0) {
@@ -115,11 +127,16 @@ public class BackPropagation {
 		}
 	}
 
+	/**
+	 * @see http://richardbowles.tripod.com/neural/backprop/backprop.htm
+	 */
 	public void trainNeuralNetwork(Collection<Pattern> trainPatternSet) {
 
 		for (Pattern currentPattern : trainPatternSet) {
 
 			double[] inputs = currentPattern.getInput();
+			double[][] deltas = new double[this.nHiddenLayers + 2][];
+
 			/*
 			 * Checks the length of the inputs corresponds to the length of the
 			 * neural network.
@@ -139,14 +156,85 @@ public class BackPropagation {
 			this.propagateInputSignal();
 
 			/* Stage 4: Compute deltas for the output layer. */
-			double[] deltasOutputLayer = this
+			deltas[this.nHiddenLayers + 1] = this
 					.computeDeltasOutputLayer(currentPattern.getOutput());
 
-			/* Stage 5 and 6 still unimplemented. 
-			 * See http://richardbowles.tripod.com/neural/backprop/backprop.htm 
+			/*
+			 * Stage 5: Compute deltas for the preceding layers by propagating
+			 * the errors backwards.
 			 */
-		}
+			for (int m = this.nHiddenLayers; m > 0; m--) {
+				deltas[m] = new double[this.nNeuronsInHiddenLayers];
+				for (int i = 0; i < this.nNeuronsInHiddenLayers; i++) {
+					double delta = 0;
+					int upperLayerCount;
 
+					/*
+					 * If upper layer is a hidden layer, we need to ignore the
+					 * BIAS perceptron.
+					 */
+					if (m + 1 == this.nHiddenLayers + 1) {
+						upperLayerCount = this.perceptronMatrix[m + 1].length;
+					} else {
+						upperLayerCount = this.perceptronMatrix[m + 1].length - 1;
+					}
+
+					for (int j = 0; j < upperLayerCount; j++) {
+						delta += this.weights[m][i][j] * deltas[m + 1][j];
+					}
+					delta *= this.activationFunction
+							.derivativeOperate(this.perceptronMatrix[m][i]
+									.getH());
+					deltas[m][i] = delta;
+				}
+			}
+
+			/*
+			 * Stage 6: Update all weights.
+			 */
+//			for (int m = 0; m < this.nHiddenLayers + 1; m++) {
+//				/* Weigths between the input and first hidden layer. */
+//				if (m == 0) {
+//					for (int i = 0; i < this.nInputs; i++) {
+//						int upperLayerCount;
+//						/*
+//						 * If upper layer is a hidden layer, we need to ignore
+//						 * the BIAS perceptron.
+//						 */
+//						if (m + 1 == this.nHiddenLayers + 1) {
+//							upperLayerCount = this.perceptronMatrix[m + 1].length;
+//						} else {
+//							upperLayerCount = this.perceptronMatrix[m + 1].length - 1;
+//						}
+//						for (int j = 0; j < upperLayerCount; j++) {
+//							this.weights[m][i][j] += this.learningRate
+//									* deltas[m + 1][i]
+//									* this.perceptronMatrix[m][j].getOutput();
+//						}
+//					}
+//				}
+//				/* Weights between the last hidden layer and output. */
+//				else if (m == this.nHiddenLayers) {
+//					for (int i = 0; i < this.nNeuronsInHiddenLayers + 1; i++) {
+//						for (int j = 0; j < this.nOutputs; j++) {
+//							this.weights[m][i][j] += this.learningRate
+//									* deltas[m + 1][i]
+//									* this.perceptronMatrix[m][j].getOutput();
+//						}
+//					}
+//				}
+//				/* Weights between hidden layers. */
+//				else {
+//					for (int i = 0; i < this.nNeuronsInHiddenLayers + 1; i++) {
+//						for (int j = 0; j < this.nNeuronsInHiddenLayers; j++) {
+//							this.weights[m][i][j] += this.learningRate
+//									* deltas[m + 1][i]
+//									* this.perceptronMatrix[m][j].getOutput();
+//						}
+//					}
+//				}
+//			}
+		}
 	}
 
 	private double[] computeDeltasOutputLayer(double[] correctOutputs) {
@@ -177,7 +265,6 @@ public class BackPropagation {
 					this.perceptronMatrix[i + 1][j]
 							.setOutput(this.activationFunction.operate(h));
 				}
-
 			}
 			/* Between Hidden Layer and Outputs. Plus the BIAS. */
 			else if (i == this.nHiddenLayers) {
@@ -209,7 +296,7 @@ public class BackPropagation {
 			}
 		}
 	}
-	
+
 	private double randomWeight() {
 		return Math.random() * 0.3;
 	}
