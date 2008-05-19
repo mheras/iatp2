@@ -1,6 +1,6 @@
 package ar.edu.itba.tp2.engine;
 
-import java.util.Set;
+import java.util.Collection;
 
 import ar.edu.itba.tp2.engine.exception.InvalidTrainPatternException;
 import ar.edu.itba.tp2.engine.pattern.Pattern;
@@ -15,17 +15,11 @@ import ar.edu.itba.tp2.engine.sigmoidfunction.SigmoidFunction;
 public class BackPropagation {
 
 	private SigmoidFunction activationFunction = null;
-
 	private Integer nInputs;
-
 	private Integer nOutputs;
-
 	private Integer nHiddenLayers;
-
 	private Integer nNeuronsInHiddenLayers;
-
 	private double[][][] weights;
-
 	private Perceptron[][] perceptronMatrix;
 
 	public BackPropagation(Integer nInputs, Integer nOutputs,
@@ -38,6 +32,7 @@ public class BackPropagation {
 		this.activationFunction = activationFunction;
 		weights = new double[nHiddenLayers + 1][][];
 		perceptronMatrix = new Perceptron[nHiddenLayers + 2][];
+
 		/* Stage 1: Initialize the weights. */
 		this.initializePerceptrons();
 		this.initializeWeightMatrix();
@@ -84,7 +79,7 @@ public class BackPropagation {
 	}
 
 	/**
-	 * This method initialize the Array of Weight Matrixs
+	 * This method initialize the array of weight matrices.
 	 */
 	private void initializeWeightMatrix() {
 
@@ -94,7 +89,7 @@ public class BackPropagation {
 				this.weights[i] = new double[this.nInputs + 1][this.nNeuronsInHiddenLayers];
 				for (int j = 0; j < this.nInputs + 1; j++) {
 					for (int k = 0; k < this.nNeuronsInHiddenLayers; k++) {
-						this.weights[i][j][k] = Math.random();
+						this.weights[i][j][k] = randomWeight();
 					}
 				}
 			}
@@ -103,7 +98,7 @@ public class BackPropagation {
 				this.weights[i] = new double[this.nNeuronsInHiddenLayers + 1][this.nOutputs];
 				for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
 					for (int k = 0; k < this.nOutputs; k++) {
-						this.weights[i][j][k] = Math.random();
+						this.weights[i][j][k] = randomWeight();
 					}
 				}
 			}
@@ -112,7 +107,7 @@ public class BackPropagation {
 				this.weights[i] = new double[this.nNeuronsInHiddenLayers + 1][this.nNeuronsInHiddenLayers];
 				for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
 					for (int k = 0; k < this.nNeuronsInHiddenLayers; k++) {
-						this.weights[i][j][k] = Math.random();
+						this.weights[i][j][k] = randomWeight();
 					}
 				}
 			}
@@ -120,7 +115,7 @@ public class BackPropagation {
 		}
 	}
 
-	public void trainNeuralNetwork(Set<Pattern> trainPatternSet) {
+	public void trainNeuralNetwork(Collection<Pattern> trainPatternSet) {
 
 		for (Pattern currentPattern : trainPatternSet) {
 
@@ -144,11 +139,12 @@ public class BackPropagation {
 			this.propagateInputSignal();
 
 			/* Stage 4: Compute deltas for the output layer. */
-			double[] deltasOutputLayer = this.computeDeltasOutputLayer(currentPattern
-					.getOutput());
-			
+			double[] deltasOutputLayer = this
+					.computeDeltasOutputLayer(currentPattern.getOutput());
 
-				/* Faltan etapa 5 y 6. */
+			/* Stage 5 and 6 still unimplemented. 
+			 * See http://richardbowles.tripod.com/neural/backprop/backprop.htm 
+			 */
 		}
 
 	}
@@ -211,8 +207,10 @@ public class BackPropagation {
 							.setOutput(this.activationFunction.operate(h));
 				}
 			}
-
 		}
-
+	}
+	
+	private double randomWeight() {
+		return Math.random() * 0.3;
 	}
 }
