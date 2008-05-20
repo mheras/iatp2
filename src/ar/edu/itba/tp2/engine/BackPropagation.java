@@ -1,7 +1,6 @@
 package ar.edu.itba.tp2.engine;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import ar.edu.itba.tp2.engine.exception.InvalidInputException;
@@ -136,11 +135,11 @@ public class BackPropagation {
 	/**
 	 * @see http://richardbowles.tripod.com/neural/backprop/backprop.htm
 	 */
-	public void trainNeuralNetwork(Collection<Pattern> trainPatternSet) {
+	public void trainNeuralNetwork(List<Pattern> trainPatternSet) {
 
 		for (long currentEpoch = 0L; currentEpoch < this.maxEpochs; currentEpoch++) {
 //			List <Pattern> unsortedPatternList = this.unsortSet();
-			
+			Collections.shuffle(trainPatternSet);
 			for (Pattern currentPattern : trainPatternSet) {
 
 				double[] inputs = currentPattern.getInput();
