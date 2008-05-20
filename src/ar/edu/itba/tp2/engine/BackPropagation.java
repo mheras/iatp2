@@ -51,38 +51,36 @@ public class BackPropagation {
 		 * Iterates over the layers of the neural network, the layer 0 is the
 		 * input layer. The N - 1 layer is the output layer.
 		 */
-		for (int i = 0; i < this.nHiddenLayers + 2; i++) {
+		for (int m = 0; m < this.nHiddenLayers + 2; m++) {
 
 			/* The input layer. */
-			if (i == 0) {
-				this.perceptronMatrix[i] = new Perceptron[this.nInputs + 1];
-				for (int j = 0; j < this.nInputs + 1; j++) {
-					this.perceptronMatrix[i][j] = new Perceptron();
+			if (m == 0) {
+				this.perceptronMatrix[m] = new Perceptron[this.nInputs + 1];
+				for (int k = 0; k < this.nInputs + 1; k++) {
+					this.perceptronMatrix[m][k] = new Perceptron();
 				}
 				/* The BIAS Input. */
-				this.perceptronMatrix[i][this.nInputs].setOutput(-1);
+				this.perceptronMatrix[m][this.nInputs].setOutput(-1);
 			}
 			/* The output layer. */
-			else if (i == (this.nHiddenLayers + 1)) {
-				this.perceptronMatrix[i] = new Perceptron[this.nOutputs];
+			else if (m == (this.nHiddenLayers + 1)) {
+				this.perceptronMatrix[m] = new Perceptron[this.nOutputs];
 
-				for (int j = 0; j < this.nOutputs; j++) {
-					this.perceptronMatrix[i][j] = new Perceptron();
+				for (int i = 0; i < this.nOutputs; i++) {
+					this.perceptronMatrix[m][i] = new Perceptron();
 				}
 			}
 			/* The Intermediate Hidden Layers. */
 			else {
-				this.perceptronMatrix[i] = new Perceptron[this.nNeuronsInHiddenLayers + 1];
+				this.perceptronMatrix[m] = new Perceptron[this.nNeuronsInHiddenLayers + 1];
 				for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
-					this.perceptronMatrix[i][j] = new Perceptron();
+					this.perceptronMatrix[m][j] = new Perceptron();
 				}
 				/* The BIAS Input in the Hidden Layer i. */
-				this.perceptronMatrix[i][this.nNeuronsInHiddenLayers]
+				this.perceptronMatrix[m][this.nNeuronsInHiddenLayers]
 						.setOutput(-1);
 			}
-
 		}
-
 	}
 
 	/**
@@ -90,45 +88,46 @@ public class BackPropagation {
 	 */
 	private void initializeWeightMatrix() {
 
+		/* If there is no hidden layers... */
 		if (this.nHiddenLayers == 0) {
-			this.weights[0] = new double[this.nInputs + 1][this.nOutputs];
-			for (int i = 0; i < this.nInputs + 1; i++) {
-				for (int j = 0; j < this.nOutputs; j++) {
-					this.weights[0][i][j] = randomWeight();
+			this.weights[0] = new double[this.nOutputs][this.nInputs + 1];
+			for (int i = 0; i < this.nOutputs; i++) {
+				for (int k = 0; k < this.nInputs + 1; k++) {
+					this.weights[0][i][k] = randomWeight();
 				}
 			}
 			return;
 		}
 
-		for (int i = 0; i < this.nHiddenLayers + 1; i++) {
+		/* If there are hidden layers... */
+		for (int m = 0; m < this.nHiddenLayers + 1; m++) {
 			/* Weights between the input layer and the first hidden layer. */
-			if (i == 0) {
-				this.weights[i] = new double[this.nInputs + 1][this.nNeuronsInHiddenLayers];
-				for (int j = 0; j < this.nInputs + 1; j++) {
-					for (int k = 0; k < this.nNeuronsInHiddenLayers; k++) {
-						this.weights[i][j][k] = randomWeight();
+			if (m == 0) {
+				this.weights[m] = new double[this.nNeuronsInHiddenLayers][this.nInputs + 1];
+				for (int j = 0; j < this.nNeuronsInHiddenLayers; j++) {
+					for (int k = 0; k < this.nInputs + 1; k++) {
+						this.weights[m][j][k] = randomWeight();
 					}
 				}
 			}
 			/* Weights between the last hidden layer and the output. */
-			else if (i == this.nHiddenLayers) {
-				this.weights[i] = new double[this.nNeuronsInHiddenLayers + 1][this.nOutputs];
-				for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
-					for (int k = 0; k < this.nOutputs; k++) {
-						this.weights[i][j][k] = randomWeight();
+			else if (m == this.nHiddenLayers) {
+				this.weights[m] = new double[this.nOutputs][this.nNeuronsInHiddenLayers + 1];
+				for (int i = 0; i < this.nOutputs; i++) {
+					for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
+						this.weights[m][i][j] = randomWeight();
 					}
 				}
 			}
 			/* Weights between hidden layers. */
 			else {
-				this.weights[i] = new double[this.nNeuronsInHiddenLayers + 1][this.nNeuronsInHiddenLayers];
-				for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
-					for (int k = 0; k < this.nNeuronsInHiddenLayers; k++) {
-						this.weights[i][j][k] = randomWeight();
+				this.weights[m] = new double[this.nNeuronsInHiddenLayers][this.nNeuronsInHiddenLayers + 1];
+				for (int j1 = 0; j1 < this.nNeuronsInHiddenLayers; j1++) {
+					for (int j2 = 0; j2 < this.nNeuronsInHiddenLayers + 1; j2++) {
+						this.weights[m][j1][j2] = randomWeight();
 					}
 				}
 			}
-
 		}
 	}
 
@@ -137,9 +136,11 @@ public class BackPropagation {
 	 */
 	public void trainNeuralNetwork(List<Pattern> trainPatternSet) {
 
-		for (long currentEpoch = 0L; currentEpoch < this.maxEpochs; currentEpoch++) {
-//			List <Pattern> unsortedPatternList = this.unsortSet();
+		/* For every epoch... */
+		for (long epoch = 0L; epoch < this.maxEpochs; epoch++) {
+			/* We shuffle the patterns, in order to get best results. */
 			Collections.shuffle(trainPatternSet);
+			/* For every pattern... */
 			for (Pattern currentPattern : trainPatternSet) {
 
 				double[] inputs = currentPattern.getInput();
@@ -149,8 +150,9 @@ public class BackPropagation {
 				 * Checks the length of the inputs corresponds to the length of
 				 * the neural network.
 				 */
-				if (inputs.length != this.nInputs)
+				if (inputs.length != this.nInputs) {
 					throw new InvalidTrainPatternException();
+				}
 
 				/*
 				 * Stage 2: Puts the input in the neural network. The input
@@ -169,7 +171,8 @@ public class BackPropagation {
 
 				/*
 				 * Stage 5: Compute deltas for the preceding layers by
-				 * propagating the errors backwards.
+				 * propagating the errors backwards (not including the input
+				 * layer).
 				 */
 				for (int m = this.nHiddenLayers; m > 0; m--) {
 					deltas[m] = new double[this.nNeuronsInHiddenLayers];
@@ -188,7 +191,7 @@ public class BackPropagation {
 						}
 
 						for (int j = 0; j < upperLayerCount; j++) {
-							delta += this.weights[m][i][j] * deltas[m + 1][j];
+							delta += this.weights[m][j][i] * deltas[m + 1][j];
 						}
 						delta *= this.activationFunction
 								.derivativeOperate(this.perceptronMatrix[m][i]
@@ -201,52 +204,59 @@ public class BackPropagation {
 				 * Stage 6: Update all weights.
 				 */
 
+				/* There are hidden layers. */
 				if (this.nHiddenLayers != 0) {
 					for (int m = 0; m < this.nHiddenLayers + 1; m++) {
 						/* Weigths between the input and first hidden layer. */
 						if (m == 0) {
-							for (int i = 0; i < this.nInputs + 1; i++) {
-								for (int j = 0; j < this.nHiddenLayers; j++) {
+							for (int j = 0; j < this.nInputs + 1; j++) {
+								for (int i = 0; i < this.nHiddenLayers; i++) {
 									this.weights[m][i][j] += this.learningRate
-											* deltas[m + 1][j]
-											* this.perceptronMatrix[m][i]
+											* deltas[m + 1][i]
+											* this.perceptronMatrix[m][j]
 													.getOutput();
 								}
 							}
-						} else if (m == this.nHiddenLayers) {
-							for (int i = 0; i < this.nHiddenLayers + 1; i++) {
-								for (int j = 0; j < this.nOutputs; j++) {
+						}
+						/* Weights between the output and hidden layers. */
+						else if (m == this.nHiddenLayers) {
+							for (int j = 0; j < this.nHiddenLayers + 1; j++) {
+								for (int i = 0; i < this.nOutputs; i++) {
 									this.weights[m][i][j] += this.learningRate
-											* deltas[m + 1][j]
-											* this.perceptronMatrix[m][i]
+											* deltas[m + 1][i]
+											* this.perceptronMatrix[m][j]
 													.getOutput();
 								}
 							}
-						} else {
+						}
+						/* Weights between hidden layers. */
+						else {
 							for (int j = 0; j < this.nHiddenLayers; j++) {
 								for (int i = 0; i < this.nHiddenLayers + 1; i++) {
 									this.weights[m][i][j] += this.learningRate
-											* deltas[m + 1][j]
-											* this.perceptronMatrix[m][i]
+											* deltas[m + 1][i]
+											* this.perceptronMatrix[m][j]
 													.getOutput();
 								}
 							}
 						}
 					}
-				} else {
-					for (int j = 0; j < this.nOutputs; j++) {
-						for (int i = 0; i < this.nInputs + 1; i++) {
-									this.weights[0][i][j] += this.learningRate
-									* deltas[1][j]
-									* this.perceptronMatrix[0][i].getOutput();
+				}
+				/* There is no hidden layers. */
+				else {
+					for (int i = 0; i < this.nOutputs; i++) {
+						for (int j = 0; j < this.nInputs + 1; j++) {
+							this.weights[0][i][j] += this.learningRate
+									* deltas[1][i]
+									* this.perceptronMatrix[0][j].getOutput();
 						}
 					}
 				}
 			}
-			
-//			System.out.println("**********************");
-//			System.out.println(String.format("Epoch %d", currentEpoch));
-//			this.printWeights();
+
+//			 System.out.println("**********************");
+//			 System.out.println(String.format("Epoch %d", epoch));
+//			 this.printWeights();
 		}
 	}
 
@@ -262,11 +272,10 @@ public class BackPropagation {
 
 		double[] result = new double[this.nOutputs];
 		for (int j = 0; j < this.nOutputs; j++) {
-			result[j] = this.perceptronMatrix[this.nHiddenLayers+1][j]
+			result[j] = this.perceptronMatrix[this.nHiddenLayers + 1][j]
 					.getOutput();
 		}
 		return result;
-
 	}
 
 	private double[] computeDeltasOutputLayer(double[] correctOutputs) {
@@ -286,61 +295,65 @@ public class BackPropagation {
 
 	private void propagateInputSignal() {
 
+		/* There are hidden layers. */
 		if (this.nHiddenLayers != 0) {
-			for (int i = 0; i < this.nHiddenLayers + 1; i++) {
-				double[][] weightMatrix = this.weights[i];
-				/* Between Inputs and Hidden Layers. Plus the BIAS. */
-				if (i == 0) {
+			for (int m = 0; m < this.nHiddenLayers + 1; m++) {
+				double[][] weightMatrix = this.weights[m];
+				/* Between Inputs and Hidden Layers (BIAS included). */
+				if (m == 0) {
 
 					for (int j = 0; j < this.nNeuronsInHiddenLayers; j++) {
 						double h = 0;
 						for (int k = 0; k < this.nInputs + 1; k++) {
-							h += weightMatrix[k][j]
-									* this.perceptronMatrix[i][k].getOutput();
+							h += weightMatrix[j][k]
+									* this.perceptronMatrix[m][k].getOutput();
 						}
-						this.perceptronMatrix[i + 1][j].setH(h);
-						this.perceptronMatrix[i + 1][j]
+						this.perceptronMatrix[m + 1][j].setH(h);
+						this.perceptronMatrix[m + 1][j]
 								.setOutput(this.activationFunction.operate(h));
 					}
 				}
 				/* Between Hidden Layer and Outputs. Plus the BIAS. */
-				else if (i == this.nHiddenLayers) {
+				else if (m == this.nHiddenLayers) {
 
-					for (int j = 0; j < this.nOutputs; j++) {
+					for (int i = 0; i < this.nOutputs; i++) {
 						double h = 0;
-						for (int k = 0; k < this.nNeuronsInHiddenLayers + 1; k++) {
-							h += weightMatrix[k][j]
-									* this.perceptronMatrix[i][k].getOutput();
+						for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
+							h += weightMatrix[i][j]
+									* this.perceptronMatrix[m][j].getOutput();
 						}
-						this.perceptronMatrix[i + 1][j].setH(h);
-						this.perceptronMatrix[i + 1][j]
+						this.perceptronMatrix[m + 1][i].setH(h);
+						this.perceptronMatrix[m + 1][i]
 								.setOutput(this.activationFunction.operate(h));
 					}
 
-				} else {
+				}
+				/* Between hidden layers. */
+				else {
 
-					for (int j = 0; j < this.nNeuronsInHiddenLayers; j++) {
-
+					for (int j1 = 0; j1 < this.nNeuronsInHiddenLayers; j1++) {
 						double h = 0;
-						for (int k = 0; k < this.nNeuronsInHiddenLayers + 1; k++) {
-							h += weightMatrix[k][j]
-									* this.perceptronMatrix[i][k].getOutput();
+						for (int j2 = 0; j2 < this.nNeuronsInHiddenLayers + 1; j2++) {
+							h += weightMatrix[j1][j2]
+									* this.perceptronMatrix[m][j2].getOutput();
 						}
-						this.perceptronMatrix[i + 1][j].setH(h);
-						this.perceptronMatrix[i + 1][j]
+						this.perceptronMatrix[m + 1][j1].setH(h);
+						this.perceptronMatrix[m + 1][j1]
 								.setOutput(this.activationFunction.operate(h));
 					}
 				}
 			}
-		} else {
-			for (int j = 0; j < this.nOutputs; j++) {
+		}
+		/* There is no hidden layers. */
+		else {
+			for (int i = 0; i < this.nOutputs; i++) {
 				double h = 0;
 				for (int k = 0; k < this.nInputs + 1; k++) {
-					h += this.weights[0][k][j]
+					h += this.weights[0][i][k]
 							* this.perceptronMatrix[0][k].getOutput();
 				}
-				this.perceptronMatrix[1][j].setH(h);
-				this.perceptronMatrix[1][j].setOutput(this.activationFunction
+				this.perceptronMatrix[1][i].setH(h);
+				this.perceptronMatrix[1][i].setOutput(this.activationFunction
 						.operate(h));
 			}
 		}
