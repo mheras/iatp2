@@ -14,16 +14,32 @@ public class FeedFowardPropagationTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		double[] inputs = { 0.0, 0.25};
-		double[] outputs = { 0.5, 0.75};
+		double[] inputs = { 0.0, 0.0};
+		double[] outputs = { 0.0};
 		Pattern myPattern = new Pattern(inputs, outputs);
 
 		Collection<Pattern> mySet = new HashSet<Pattern>();
 		mySet.add(myPattern);
-
+		inputs = new double[]{0.0, 1.0};
+		outputs = new double[]{1.0};
+		myPattern = new Pattern(inputs, outputs);
+		mySet.add(myPattern);
+		
+		inputs = new double[]{1.0, 0.0};
+		outputs = new double[]{1.0};
+		myPattern = new Pattern(inputs, outputs);
+		mySet.add(myPattern);
+		
+		inputs = new double[]{1.0, 1.0};
+		outputs = new double[]{0.0};
+		myPattern = new Pattern(inputs, outputs);
+		mySet.add(myPattern);
 		SigmoidFunction myFunction = new SigmoidExponentialFunctionImpl(0.5);
-		BackPropagation myBP = new BackPropagation(2, 2, 1, 2, 0.2, myFunction);
+		BackPropagation myBP = new BackPropagation(2, 1, 0, 2, 0.05, myFunction);
 		myBP.trainNeuralNetwork(mySet);
+		inputs = new double[]{ 0.0, 0.0};
+		System.out.println(myBP.testNeuralNetwork(inputs)[0]);
+		return;
 	}
 
 }
