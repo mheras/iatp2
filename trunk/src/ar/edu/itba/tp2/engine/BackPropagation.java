@@ -183,9 +183,9 @@ public class BackPropagation {
 						 * the BIAS perceptron.
 						 */
 						if (m + 1 == this.nHiddenLayers + 1) {
-							upperLayerCount = this.perceptronMatrix[m + 1].length;
+							upperLayerCount = this.nOutputs;
 						} else {
-							upperLayerCount = this.perceptronMatrix[m + 1].length - 1;
+							upperLayerCount = this.nNeuronsInHiddenLayers;
 						}
 
 						for (int j = 0; j < upperLayerCount; j++) {
