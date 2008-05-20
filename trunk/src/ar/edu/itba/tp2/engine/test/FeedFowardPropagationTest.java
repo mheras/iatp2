@@ -7,6 +7,7 @@ import ar.edu.itba.tp2.engine.BackPropagation;
 import ar.edu.itba.tp2.engine.pattern.Pattern;
 import ar.edu.itba.tp2.engine.sigmoidfunction.SigmoidFunction;
 import ar.edu.itba.tp2.engine.sigmoidfunction.exp.SigmoidExponentialFunctionImpl;
+import ar.edu.itba.tp2.engine.sigmoidfunction.tanh.SigmoidTanHFunctionImpl;
 
 public class FeedFowardPropagationTest {
 
@@ -20,21 +21,21 @@ public class FeedFowardPropagationTest {
 
 		Collection<Pattern> mySet = new HashSet<Pattern>();
 		mySet.add(myPattern);
-		inputs = new double[] { 0.0, 1.0 };
-		outputs = new double[] { 1.0 };
-		myPattern = new Pattern(inputs, outputs);
+		double[] inputs2 = new double[] { 0.0, 1.0 };
+		double[] outputs2 = new double[] { 1.0 };
+		myPattern = new Pattern(inputs2, outputs2);
 		mySet.add(myPattern);
 
-		inputs = new double[] { 1.0, 0.0 };
-		outputs = new double[] { 1.0 };
-		myPattern = new Pattern(inputs, outputs);
+		double[] inputs3 = new double[] { 1.0, 0.0 };
+		double[] outputs3 = new double[] { 1.0 };
+		myPattern = new Pattern(inputs3, outputs3);
 		mySet.add(myPattern);
 
-		inputs = new double[] { 1.0, 1.0 };
-		outputs = new double[] { 0.0 };
-		myPattern = new Pattern(inputs, outputs);
+		double[] inputs4 = new double[] { 1.0, 1.0 };
+		double[] outputs4 = new double[] { 0.0 };
+		myPattern = new Pattern(inputs4, outputs4);
 		mySet.add(myPattern);
-		SigmoidFunction myFunction = new SigmoidExponentialFunctionImpl(0.5);
+		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(0.5);
 		BackPropagation myBP = new BackPropagation(2, 1, 0, 2, 0.1, 1000,
 				myFunction);
 		myBP.trainNeuralNetwork(mySet);

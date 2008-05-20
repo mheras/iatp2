@@ -138,7 +138,7 @@ public class BackPropagation {
 	 */
 	public void trainNeuralNetwork(Collection<Pattern> trainPatternSet) {
 
-		for (long currentEpoch = 0; currentEpoch < this.maxEpochs; currentEpoch++) {
+		for (long currentEpoch = 0L; currentEpoch < this.maxEpochs; currentEpoch++) {
 //			List <Pattern> unsortedPatternList = this.unsortSet();
 			
 			for (Pattern currentPattern : trainPatternSet) {
@@ -224,8 +224,8 @@ public class BackPropagation {
 								}
 							}
 						} else {
-							for (int i = 0; i < this.nHiddenLayers + 1; i++) {
-								for (int j = 0; j < this.nHiddenLayers; j++) {
+							for (int j = 0; j < this.nHiddenLayers; j++) {
+								for (int i = 0; i < this.nHiddenLayers + 1; i++) {
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][j]
 											* this.perceptronMatrix[m][i]
@@ -235,9 +235,9 @@ public class BackPropagation {
 						}
 					}
 				} else {
-					for (int i = 0; i < this.nInputs + 1; i++) {
-						for (int j = 0; j < this.nOutputs; j++) {
-							this.weights[0][i][j] += this.learningRate
+					for (int j = 0; j < this.nOutputs; j++) {
+						for (int i = 0; i < this.nInputs + 1; i++) {
+									this.weights[0][i][j] += this.learningRate
 									* deltas[1][j]
 									* this.perceptronMatrix[0][i].getOutput();
 						}
