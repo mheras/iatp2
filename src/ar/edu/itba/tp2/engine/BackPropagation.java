@@ -210,7 +210,7 @@ public class BackPropagation {
 						/* Weigths between the input and first hidden layer. */
 						if (m == 0) {
 							for (int j = 0; j < this.nInputs + 1; j++) {
-								for (int i = 0; i < this.nHiddenLayers; i++) {
+								for (int i = 0; i < this.nNeuronsInHiddenLayers; i++) {
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
@@ -220,7 +220,7 @@ public class BackPropagation {
 						}
 						/* Weights between the output and hidden layers. */
 						else if (m == this.nHiddenLayers) {
-							for (int j = 0; j < this.nHiddenLayers + 1; j++) {
+							for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
 								for (int i = 0; i < this.nOutputs; i++) {
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][i]
@@ -231,8 +231,8 @@ public class BackPropagation {
 						}
 						/* Weights between hidden layers. */
 						else {
-							for (int j = 0; j < this.nHiddenLayers; j++) {
-								for (int i = 0; i < this.nHiddenLayers + 1; i++) {
+							for (int j = 0; j < this.nNeuronsInHiddenLayers+ 1; j++) {
+								for (int i = 0; i < this.nNeuronsInHiddenLayers ; i++) {
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
