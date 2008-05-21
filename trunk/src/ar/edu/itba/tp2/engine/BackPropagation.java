@@ -136,6 +136,7 @@ public class BackPropagation {
 	 */
 	public void trainNeuralNetwork(List<Pattern> trainPatternSet) {
 
+		//this.printWeights();
 		/* For every epoch... */
 		for (long epoch = 0L; epoch < this.maxEpochs; epoch++) {
 			/* We shuffle the patterns, in order to get best results. */
@@ -184,7 +185,7 @@ public class BackPropagation {
 						 * If upper layer is a hidden layer, we need to ignore
 						 * the BIAS perceptron.
 						 */
-						if (m + 1 == this.nHiddenLayers + 1) {
+						if (m == this.nHiddenLayers ) {
 							upperLayerCount = this.nOutputs;
 						} else {
 							upperLayerCount = this.nNeuronsInHiddenLayers;
@@ -258,6 +259,8 @@ public class BackPropagation {
 //			 System.out.println(String.format("Epoch %d", epoch));
 //			 this.printWeights();
 		}
+//		System.out.println();
+//		this.printWeights();
 	}
 
 	public double[] testNeuralNetwork(double[] input) {
@@ -374,6 +377,6 @@ public class BackPropagation {
 	}
 
 	private double randomWeight() {
-		return Math.random() * 0.3;
+		return Math.random() * 0.5 -0.5;
 	}
 }
