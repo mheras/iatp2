@@ -35,7 +35,7 @@ public class FeedFowardPropagationTest {
 		myPattern = new Pattern(inputs4, outputs4);
 		myList.add(myPattern);
 		SigmoidFunction myFunction = new SigmoidExponentialFunctionImpl(0.5);
-		BackPropagation myBP = new BackPropagation(2, 1, 1, 2, 0.1, 120,
+		BackPropagation myBP = new BackPropagation(2, 1, 1, 2, 0.01, 120,
 				myFunction);
 		myBP.trainNeuralNetwork(myList);
 		inputs = new double[] { 1.0, 1.0 };
