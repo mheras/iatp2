@@ -25,6 +25,7 @@ public class BackPropagation {
 	private double[][][] weights;
 	private long maxEpochs;
 	private Perceptron[][] perceptronMatrix;
+	private double currentError;
 
 	public BackPropagation(Integer nInputs, Integer nOutputs,
 			Integer nHiddenLayers, Integer nNeuronsInHiddenLayers,
@@ -39,7 +40,7 @@ public class BackPropagation {
 		this.maxEpochs = maxEpochs;
 		weights = new double[nHiddenLayers + 1][][];
 		perceptronMatrix = new Perceptron[nHiddenLayers + 2][];
-
+		currentError = 0;
 		/* Stage 1: Initialize the weights. */
 		this.initializePerceptrons();
 		this.initializeWeightMatrix();
@@ -142,6 +143,7 @@ public class BackPropagation {
 			/* We shuffle the patterns, in order to get best results. */
 			Collections.shuffle(trainPatternSet);
 			/* For every pattern... */
+			double sumOfAllErrors = 0;
 			for (Pattern currentPattern : trainPatternSet) {
 
 				double[] inputs = currentPattern.getInput();
@@ -169,7 +171,7 @@ public class BackPropagation {
 				/* Stage 4: Compute deltas for the output layer. */
 				deltas[this.nHiddenLayers + 1] = this
 						.computeDeltasOutputLayer(currentPattern.getOutput());
-
+				sumOfAllErrors += this.currentError;
 				/*
 				 * Stage 5: Compute deltas for the preceding layers by
 				 * propagating the errors backwards (not including the input
@@ -255,9 +257,10 @@ public class BackPropagation {
 				}
 			}
 
-			 System.out.println("**********************");
-			 System.out.println(String.format("Epoch %d", epoch));
-			 this.printWeights();
+//			 System.out.println("**********************");
+//			 System.out.println(String.format("Epoch %d", epoch));
+//			 this.printWeights();
+			System.out.println(sumOfAllErrors);
 		}
 //		System.out.println();
 //		this.printWeights();
@@ -292,6 +295,7 @@ public class BackPropagation {
 			sum += (0.5) * Math.pow((correctOutputs[i] - NNoutputs[i]
 					.getOutput()), 2);
 		}
+		this.currentError = sum;
 	//	System.out.println(sum);
 		return result;
 	}

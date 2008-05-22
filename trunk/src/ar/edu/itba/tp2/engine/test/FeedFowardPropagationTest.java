@@ -22,12 +22,12 @@ public class FeedFowardPropagationTest {
 		List<Pattern> myList = new ArrayList<Pattern>();
 		myList.add(myPattern);
 		double[] inputs2 = new double[] { -1.0, 1.0 };
-		double[] outputs2 = new double[] { 1.0 };
+		double[] outputs2 = new double[] { -1.0 };
 		myPattern = new Pattern(inputs2, outputs2);
 		myList.add(myPattern);
 
 		double[] inputs3 = new double[] { 1.0, -1.0 };
-		double[] outputs3 = new double[] { 1.0 };
+		double[] outputs3 = new double[] { -1.0 };
 		myPattern = new Pattern(inputs3, outputs3);
 		myList.add(myPattern);
 
@@ -35,11 +35,11 @@ public class FeedFowardPropagationTest {
 		double[] outputs4 = new double[] { 1.0 };
 		myPattern = new Pattern(inputs4, outputs4);
 		myList.add(myPattern);
-		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(1);
-		BackPropagation myBP = new BackPropagation(2, 1, 1, 2, 0.03, 1200,
+		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(2);
+		BackPropagation myBP = new BackPropagation(2, 1, 1, 2, 0.1, 1200,
 				myFunction);
 		myBP.trainNeuralNetwork(myList);
-		inputs = new double[] { -1.0, -1.0 };
+		inputs = new double[] { 1.0, -1.0 };
 		System.out.println("RESULT:");
 		System.out.println(myBP.testNeuralNetwork(inputs)[0]);
 		return;
