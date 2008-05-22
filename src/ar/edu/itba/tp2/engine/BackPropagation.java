@@ -255,9 +255,9 @@ public class BackPropagation {
 				}
 			}
 
-//			 System.out.println("**********************");
-//			 System.out.println(String.format("Epoch %d", epoch));
-//			 this.printWeights();
+			 System.out.println("**********************");
+			 System.out.println(String.format("Epoch %d", epoch));
+			 this.printWeights();
 		}
 //		System.out.println();
 //		this.printWeights();
@@ -292,7 +292,7 @@ public class BackPropagation {
 			sum += (0.5) * Math.pow((correctOutputs[i] - NNoutputs[i]
 					.getOutput()), 2);
 		}
-		System.out.println(sum);
+	//	System.out.println(sum);
 		return result;
 	}
 
@@ -377,6 +377,6 @@ public class BackPropagation {
 	}
 
 	private double randomWeight() {
-		return Math.random() * 0.5 -0.5;
+		return Math.random() -0.5;
 	}
 }
