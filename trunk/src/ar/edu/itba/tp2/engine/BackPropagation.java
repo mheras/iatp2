@@ -3,6 +3,7 @@ package ar.edu.itba.tp2.engine;
 import java.util.Collections;
 import java.util.List;
 
+import ar.edu.itba.tp2.engine.configuration.BackPropagationConfiguration;
 import ar.edu.itba.tp2.engine.exception.InvalidInputException;
 import ar.edu.itba.tp2.engine.exception.InvalidTrainPatternException;
 import ar.edu.itba.tp2.engine.pattern.Pattern;
@@ -17,27 +18,40 @@ import ar.edu.itba.tp2.engine.sigmoidfunction.SigmoidFunction;
 public class BackPropagation {
 
 	private SigmoidFunction activationFunction = null;
+
 	private Integer nInputs;
+
 	private Integer nOutputs;
+
 	private Integer nHiddenLayers;
+
 	private Integer nNeuronsInHiddenLayers;
+
 	private double learningRate;
+
 	private double[][][] weights;
+
+	private double[][][] previousWeights = null;
+
 	private long maxEpochs;
+
+	private double momentum;
+
 	private Perceptron[][] perceptronMatrix;
+
 	private double currentError;
 
-	public BackPropagation(Integer nInputs, Integer nOutputs,
-			Integer nHiddenLayers, Integer nNeuronsInHiddenLayers,
-			double learningRate, long maxEpochs,
-			SigmoidFunction activationFunction) {
-		this.nInputs = nInputs;
-		this.nOutputs = nOutputs;
-		this.nHiddenLayers = nHiddenLayers;
-		this.nNeuronsInHiddenLayers = nNeuronsInHiddenLayers;
-		this.activationFunction = activationFunction;
-		this.learningRate = learningRate;
-		this.maxEpochs = maxEpochs;
+	private double previousError = Double.MAX_VALUE;
+
+	public BackPropagation(BackPropagationConfiguration configuration) {
+		this.nInputs = configuration.getNInputs();
+		this.nOutputs = configuration.getNOutputs();
+		this.nHiddenLayers = configuration.getNHiddenLayers();
+		this.nNeuronsInHiddenLayers = configuration.getNNeuronsInHiddenLayers();
+		this.activationFunction = configuration.getActivationFunction();
+		this.learningRate = configuration.getLearningRate();
+		this.maxEpochs = configuration.getMaxEpochs();
+		this.momentum = configuration.getMomentum();
 		weights = new double[nHiddenLayers + 1][][];
 		perceptronMatrix = new Perceptron[nHiddenLayers + 2][];
 		currentError = 0;
@@ -137,7 +151,8 @@ public class BackPropagation {
 	 */
 	public void trainNeuralNetwork(List<Pattern> trainPatternSet) {
 
-		//this.printWeights();
+		boolean giveMomentum = false;
+		// this.printWeights();
 		/* For every epoch... */
 		for (long epoch = 0L; epoch < this.maxEpochs; epoch++) {
 			/* We shuffle the patterns, in order to get best results. */
@@ -172,6 +187,12 @@ public class BackPropagation {
 				deltas[this.nHiddenLayers + 1] = this
 						.computeDeltasOutputLayer(currentPattern.getOutput());
 				sumOfAllErrors += this.currentError;
+				if (epoch != 0 && this.currentError < this.previousError) {
+					giveMomentum = true;
+				} else {
+					giveMomentum = false;
+				}
+				this.previousError = this.currentError;
 				/*
 				 * Stage 5: Compute deltas for the preceding layers by
 				 * propagating the errors backwards (not including the input
@@ -187,7 +208,7 @@ public class BackPropagation {
 						 * If upper layer is a hidden layer, we need to ignore
 						 * the BIAS perceptron.
 						 */
-						if (m == this.nHiddenLayers ) {
+						if (m == this.nHiddenLayers) {
 							upperLayerCount = this.nOutputs;
 						} else {
 							upperLayerCount = this.nNeuronsInHiddenLayers;
@@ -214,10 +235,14 @@ public class BackPropagation {
 						if (m == 0) {
 							for (int j = 0; j < this.nInputs + 1; j++) {
 								for (int i = 0; i < this.nNeuronsInHiddenLayers; i++) {
+									double addMomentum = 0;
+									if(giveMomentum){
+										addMomentum = this.momentum * this.previousWeights[m][i][j];
+									}
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
-													.getOutput();
+													.getOutput() + addMomentum;
 								}
 							}
 						}
@@ -225,21 +250,29 @@ public class BackPropagation {
 						else if (m == this.nHiddenLayers) {
 							for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
 								for (int i = 0; i < this.nOutputs; i++) {
+									double addMomentum = 0;
+									if(giveMomentum){
+										addMomentum = this.momentum * this.previousWeights[m][i][j];
+									}
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
-													.getOutput();
+													.getOutput() + addMomentum;
 								}
 							}
 						}
 						/* Weights between hidden layers. */
 						else {
-							for (int j = 0; j < this.nNeuronsInHiddenLayers+ 1; j++) {
-								for (int i = 0; i < this.nNeuronsInHiddenLayers ; i++) {
+							for (int j = 0; j < this.nNeuronsInHiddenLayers + 1; j++) {
+								for (int i = 0; i < this.nNeuronsInHiddenLayers; i++) {
+									double addMomentum = 0;
+									if(giveMomentum){
+										addMomentum = this.momentum * this.previousWeights[m][i][j];
+									}
 									this.weights[m][i][j] += this.learningRate
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
-													.getOutput();
+													.getOutput() + addMomentum;
 								}
 							}
 						}
@@ -249,21 +282,26 @@ public class BackPropagation {
 				else {
 					for (int i = 0; i < this.nOutputs; i++) {
 						for (int j = 0; j < this.nInputs + 1; j++) {
+							double addMomentum = 0;
+							if(giveMomentum){
+								addMomentum = this.momentum * this.previousWeights[0][i][j];
+							}
 							this.weights[0][i][j] += this.learningRate
 									* deltas[1][i]
-									* this.perceptronMatrix[0][j].getOutput();
+									* this.perceptronMatrix[0][j].getOutput() + addMomentum;
 						}
 					}
 				}
+				this.previousWeights = this.cloneWeights(weights);
 			}
 
-//			 System.out.println("**********************");
-//			 System.out.println(String.format("Epoch %d", epoch));
-//			 this.printWeights();
+			// System.out.println("**********************");
+			// System.out.println(String.format("Epoch %d", epoch));
+			// this.printWeights();
 			System.out.println(sumOfAllErrors);
 		}
-//		System.out.println();
-//		this.printWeights();
+		// System.out.println();
+		// this.printWeights();
 	}
 
 	public double[] testNeuralNetwork(double[] input) {
@@ -296,7 +334,7 @@ public class BackPropagation {
 					.getOutput()), 2);
 		}
 		this.currentError = sum;
-	//	System.out.println(sum);
+		// System.out.println(sum);
 		return result;
 	}
 
@@ -381,6 +419,25 @@ public class BackPropagation {
 	}
 
 	private double randomWeight() {
-		return Math.random() -0.5;
+		return Math.random() - 0.5;
+	}
+	
+	private double[][] cloneWeigthMatrix(double [][] weightMatrix){
+		
+		double [][] newMatrix = new double[weightMatrix.length][weightMatrix[0].length];
+		for(int i=0; i< weightMatrix.length ; i++){
+			for(int j=0;j<weightMatrix[i].length; j++){
+				newMatrix[i][j] = weightMatrix[i][j];
+			}
+		}
+		return newMatrix;
+	}
+	
+	private double [][][] cloneWeights(double [][][] weights){
+		double[][][] newArrayMatrix = new double[weights.length][][];
+		for(int m=0; m< weights.length; m++){
+			newArrayMatrix[m] = cloneWeigthMatrix(weights[m]);
+		}
+		return newArrayMatrix;
 	}
 }
