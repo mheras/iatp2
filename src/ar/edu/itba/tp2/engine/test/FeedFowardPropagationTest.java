@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.itba.tp2.engine.BackPropagation;
+import ar.edu.itba.tp2.engine.configuration.BackPropagationConfiguration;
 import ar.edu.itba.tp2.engine.pattern.Pattern;
 import ar.edu.itba.tp2.engine.sigmoidfunction.SigmoidFunction;
 import ar.edu.itba.tp2.engine.sigmoidfunction.exp.SigmoidExponentialFunctionImpl;
@@ -36,8 +37,19 @@ public class FeedFowardPropagationTest {
 		myPattern = new Pattern(inputs4, outputs4);
 		myList.add(myPattern);
 		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(5);
-		BackPropagation myBP = new BackPropagation(2, 1, 0, 3, 0.1, 1200,
-				myFunction);
+		
+		/* Configuration of the Back Propagation Engine. */
+		BackPropagationConfiguration currentConfiguration = new BackPropagationConfiguration();
+		currentConfiguration.setActivationFunction(myFunction);
+		currentConfiguration.setNInputs(2);
+		currentConfiguration.setNOutputs(1);
+		currentConfiguration.setNHiddenLayers(1);
+		currentConfiguration.setNNeuronsInHiddenLayers(5);
+		currentConfiguration.setLearningRate(0.1);
+		currentConfiguration.setMaxEpochs(1200);
+		currentConfiguration.setMomentum(0.8);
+
+		BackPropagation myBP = new BackPropagation(currentConfiguration);
 		myBP.trainNeuralNetwork(myList);
 		inputs = new double[] { 1.0, -1.0 };
 		System.out.println("RESULT:");
