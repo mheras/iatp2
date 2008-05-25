@@ -36,7 +36,7 @@ public class FeedFowardPropagationTest {
 		double[] outputs4 = new double[] { 1.0 };
 		myPattern = new Pattern(inputs4, outputs4);
 		myList.add(myPattern);
-		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(5);
+		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(1);
 		
 		/* Configuration of the Back Propagation Engine. */
 		BackPropagationConfiguration currentConfiguration = new BackPropagationConfiguration();
@@ -51,7 +51,7 @@ public class FeedFowardPropagationTest {
 
 		BackPropagation myBP = new BackPropagation(currentConfiguration);
 		myBP.trainNeuralNetwork(myList);
-		inputs = new double[] { 1.0, -1.0 };
+		inputs = new double[] { 1.0, 1.0 };
 		System.out.println("RESULT:");
 		System.out.println(myBP.testNeuralNetwork(inputs)[0]);
 		return;
