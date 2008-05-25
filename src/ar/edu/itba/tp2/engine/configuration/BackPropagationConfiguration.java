@@ -12,6 +12,8 @@ public class BackPropagationConfiguration {
 	private double learningRate;
 	private long maxEpochs;
 	private double momentum;
+	private double adaptableEtaAlpha;
+	private double adaptableEtaBeta;
 	
 	public SigmoidFunction getActivationFunction() {
 		return activationFunction;
@@ -60,6 +62,18 @@ public class BackPropagationConfiguration {
 	}
 	public void setNOutputs(Integer outputs) {
 		nOutputs = outputs;
+	}
+	public double getAdaptableEtaAlpha() {
+		return adaptableEtaAlpha;
+	}
+	public void setAdaptableEtaAlpha(double adaptableEtaAlpha) {
+		this.adaptableEtaAlpha = adaptableEtaAlpha;
+	}
+	public double getAdaptableEtaBeta() {
+		return adaptableEtaBeta;
+	}
+	public void setAdaptableEtaBeta(double adaptableEtaBeta) {
+		this.adaptableEtaBeta = adaptableEtaBeta;
 	}
 	
 }

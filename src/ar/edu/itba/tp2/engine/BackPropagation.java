@@ -152,6 +152,7 @@ public class BackPropagation {
 	public void trainNeuralNetwork(List<Pattern> trainPatternSet) {
 
 		boolean giveMomentum = false;
+		double newEta = this.learningRate;
 		// this.printWeights();
 		/* For every epoch... */
 		for (long epoch = 0L; epoch < this.maxEpochs; epoch++) {
@@ -189,6 +190,7 @@ public class BackPropagation {
 				sumOfAllErrors += this.currentError;
 				if (epoch != 0 && this.currentError < this.previousError) {
 					giveMomentum = true;
+					
 				} else {
 					giveMomentum = false;
 				}
