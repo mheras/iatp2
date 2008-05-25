@@ -48,7 +48,8 @@ public class FeedFowardPropagationTest {
 		currentConfiguration.setLearningRate(0.1);
 		currentConfiguration.setMaxEpochs(1200);
 		currentConfiguration.setMomentum(0.8);
-
+		currentConfiguration.setAdaptableEtaAlpha(0.01);
+		currentConfiguration.setAdaptableEtaBeta(0.01);
 		BackPropagation myBP = new BackPropagation(currentConfiguration);
 		myBP.trainNeuralNetwork(myList);
 		inputs = new double[] { 1.0, 1.0 };
