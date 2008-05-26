@@ -44,12 +44,12 @@ public class FeedFowardPropagationTest {
 		currentConfiguration.setNInputs(2);
 		currentConfiguration.setNOutputs(1);
 		currentConfiguration.setNHiddenLayers(1);
-		currentConfiguration.setNNeuronsInHiddenLayers(5);
-		currentConfiguration.setLearningRate(0.1);
+		currentConfiguration.setNNeuronsInHiddenLayers(3);
+		currentConfiguration.setLearningRate(0.01);
 		currentConfiguration.setMaxEpochs(1200);
-		currentConfiguration.setMomentum(0.8);
-		currentConfiguration.setAdaptableEtaAlpha(0.01);
-		currentConfiguration.setAdaptableEtaBeta(0.01);
+		currentConfiguration.setMomentum(0);
+		currentConfiguration.setAdaptableEtaAlpha(0);
+		currentConfiguration.setAdaptableEtaBeta(0);
 		BackPropagation myBP = new BackPropagation(currentConfiguration);
 		myBP.trainNeuralNetwork(myList);
 		inputs = new double[] { 1.0, 1.0 };
