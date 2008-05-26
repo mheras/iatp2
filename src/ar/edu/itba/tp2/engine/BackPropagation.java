@@ -42,6 +42,10 @@ public class BackPropagation {
 	private double currentError;
 
 	private double previousError = Double.MAX_VALUE;
+	
+	private double adaptableEtaAlpha;
+	
+	private double adaptableEtaBeta;
 
 	public BackPropagation(BackPropagationConfiguration configuration) {
 		this.nInputs = configuration.getNInputs();
@@ -51,7 +55,12 @@ public class BackPropagation {
 		this.activationFunction = configuration.getActivationFunction();
 		this.learningRate = configuration.getLearningRate();
 		this.maxEpochs = configuration.getMaxEpochs();
+		/* If this parameter is 0, there is no momentum. */
 		this.momentum = configuration.getMomentum();
+		/* If this two parameters are 0, there is no adaptableEta improvement. */
+		this.adaptableEtaAlpha = configuration.getAdaptableEtaAlpha();
+		this.adaptableEtaBeta = configuration.getAdaptableEtaBeta();
+		
 		weights = new double[nHiddenLayers + 1][][];
 		perceptronMatrix = new Perceptron[nHiddenLayers + 2][];
 		currentError = 0;
@@ -190,9 +199,10 @@ public class BackPropagation {
 				sumOfAllErrors += this.currentError;
 				if (epoch != 0 && this.currentError < this.previousError) {
 					giveMomentum = true;
-					
+					newEta += this.adaptableEtaAlpha;
 				} else {
 					giveMomentum = false;
+					newEta += (-1)*this.adaptableEtaBeta*newEta;
 				}
 				this.previousError = this.currentError;
 				/*
@@ -241,7 +251,8 @@ public class BackPropagation {
 									if(giveMomentum){
 										addMomentum = this.momentum * this.previousWeights[m][i][j];
 									}
-									this.weights[m][i][j] += this.learningRate
+									/*adaptable Eta*/
+									this.weights[m][i][j] += newEta
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
 													.getOutput() + addMomentum;
@@ -256,7 +267,7 @@ public class BackPropagation {
 									if(giveMomentum){
 										addMomentum = this.momentum * this.previousWeights[m][i][j];
 									}
-									this.weights[m][i][j] += this.learningRate
+									this.weights[m][i][j] += newEta
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
 													.getOutput() + addMomentum;
@@ -271,7 +282,7 @@ public class BackPropagation {
 									if(giveMomentum){
 										addMomentum = this.momentum * this.previousWeights[m][i][j];
 									}
-									this.weights[m][i][j] += this.learningRate
+									this.weights[m][i][j] += newEta
 											* deltas[m + 1][i]
 											* this.perceptronMatrix[m][j]
 													.getOutput() + addMomentum;
@@ -288,7 +299,7 @@ public class BackPropagation {
 							if(giveMomentum){
 								addMomentum = this.momentum * this.previousWeights[0][i][j];
 							}
-							this.weights[0][i][j] += this.learningRate
+							this.weights[0][i][j] += newEta
 									* deltas[1][i]
 									* this.perceptronMatrix[0][j].getOutput() + addMomentum;
 						}
