@@ -52,7 +52,7 @@ public class FeedFowardPropagationTest {
 		currentConfiguration.setAdaptableEtaBeta(0.5);
 		BackPropagation myBP = new BackPropagation(currentConfiguration);
 		myBP.trainNeuralNetwork(myList);
-		inputs = new double[] { 1.0, 1.0 };
+		inputs = new double[] { -1.0, -1.0 };
 		System.out.println("RESULT:");
 		System.out.println(myBP.testNeuralNetwork(inputs)[0]);
 		return;
