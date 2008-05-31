@@ -9,7 +9,7 @@ public class SurfaceFunctionImpl implements Function {
 
 		double[] result = new double[1];
 
-		result[0] = args[0]*Math.exp(Math.pow(((-1) * args[0]), 2)
+		result[0] = args[0]*Math.exp(((-1)* Math.pow((args[0]), 2))
 								- Math.pow(args[1], 2));
 		return result;
 	}
