@@ -2,6 +2,11 @@ package ar.edu.itba.tp2.engine.configuration;
 
 import ar.edu.itba.tp2.engine.sigmoidfunction.SigmoidFunction;
 
+/**
+ * @author Jorge Goldman
+ * This class is the configuration class for the BackPropagation Engine
+ *
+ */
 public class BackPropagationConfiguration {
 
 	private SigmoidFunction activationFunction = null;
@@ -14,7 +19,14 @@ public class BackPropagationConfiguration {
 	private double momentum;
 	private double adaptableEtaAlpha;
 	private double adaptableEtaBeta;
+	private double minError;
 	
+	public double getMinError() {
+		return minError;
+	}
+	public void setMinError(double minError) {
+		this.minError = minError;
+	}
 	public SigmoidFunction getActivationFunction() {
 		return activationFunction;
 	}
