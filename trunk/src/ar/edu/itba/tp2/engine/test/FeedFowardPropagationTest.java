@@ -12,6 +12,7 @@ import ar.edu.itba.tp2.engine.pattern.PatternListFactory;
 import ar.edu.itba.tp2.engine.pattern.PatternListFactoryConfiguration;
 import ar.edu.itba.tp2.engine.pattern.PatternListReport;
 import ar.edu.itba.tp2.engine.sigmoidfunction.SigmoidFunction;
+import ar.edu.itba.tp2.engine.sigmoidfunction.exp.SigmoidExponentialFunctionImpl;
 import ar.edu.itba.tp2.engine.sigmoidfunction.tanh.SigmoidTanHFunctionImpl;
 
 public class FeedFowardPropagationTest {
@@ -22,11 +23,12 @@ public class FeedFowardPropagationTest {
 	public static void main(String[] args) {
 		SigmoidFunction myFunction = new SigmoidTanHFunctionImpl(1);
 		PatternListFactoryConfiguration myConfiguration = new PatternListFactoryConfiguration();
-		myConfiguration.setQuantity(10);
+		myConfiguration.setQuantity(20);//Calcular  +1 al cuadrado para saber la cantidad de puntos 
 		myConfiguration.setRealFunction(new SurfaceFunctionImpl());
 		myConfiguration.setSigmoidFunction(myFunction);
 		PatternListFactory patternFactory = new PatternListFactory();
-		List<Pattern> myList = patternFactory.getRandomMeshPatternList(myConfiguration);
+		List<Pattern> myList = patternFactory.getUniformMeshPatternList(myConfiguration);
+	//	List<Pattern> myList = patternFactory.getRandomMeshPatternList(myConfiguration);
 		
 		
 	
@@ -38,10 +40,10 @@ public class FeedFowardPropagationTest {
 		currentConfiguration.setNOutputs(1);
 		currentConfiguration.setNHiddenLayers(2);
 		currentConfiguration.setNNeuronsInHiddenLayers(6);
-		currentConfiguration.setLearningRate(0.05);
+		currentConfiguration.setLearningRate(0.06);
 		currentConfiguration.setMaxEpochs(3000);
-		currentConfiguration.setMomentum(0.0000000000001);
-		currentConfiguration.setAdaptableEtaAlpha(0.0000001);//0.000001305
+		currentConfiguration.setMomentum(0.000000000000525);//0.0000000000005
+		currentConfiguration.setAdaptableEtaAlpha(0.0000001);
 		currentConfiguration.setAdaptableEtaBeta(0.0000001);
 		/* This error its the BackPropagation Minimun Cuadratic Error for epoch. */
 		currentConfiguration.setMinError(0.00000001);

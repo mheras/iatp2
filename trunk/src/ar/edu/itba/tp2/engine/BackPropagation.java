@@ -1,5 +1,10 @@
 package ar.edu.itba.tp2.engine;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -171,6 +176,14 @@ public class BackPropagation {
 
 		boolean giveMomentum = false;
 		double newEta = this.learningRate;
+		try {
+			File file = new File("epochError.out");
+			OutputStream fos = new FileOutputStream(file);
+			OutputStreamWriter fw = new OutputStreamWriter(fos);
+
+			fw.write("\n");
+		
+		
 		// this.printWeights();
 		/* For every epoch... */
 		double sumOfAllErrors = Double.MAX_VALUE;
@@ -326,7 +339,15 @@ public class BackPropagation {
 			// System.out.println("**********************");
 			// System.out.println(String.format("Epoch %d", epoch));
 			// this.printWeights();
-			System.out.println(sumOfAllErrors);
+				fw.write(Long.toString(epoch) + " ");
+				fw.write(Double.toString(sumOfAllErrors));
+				fw.write("\n");
+				
+					
+		}
+		fw.close();
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 		// System.out.println();
 		// this.printWeights();
