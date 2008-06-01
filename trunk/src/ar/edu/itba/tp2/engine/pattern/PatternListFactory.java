@@ -26,8 +26,37 @@ public class PatternListFactory {
 	public static int MIN_Y = -2;
 
 	public static double DIV_FACTOR = 2;
-	
-	public static double MAX_OUTPUT = 0.5; 
+
+	public static double MAX_OUTPUT = 0.5;
+
+	public PatternListReport getPatternListReport(List<Pattern> patternList,
+			PatternListFactoryConfiguration configuration){
+		
+			double maxError = Double.MIN_VALUE;
+			double minError = Double.MAX_VALUE;
+			double averageError = 0;
+			PatternListReport report = new PatternListReport();
+			
+			for(Pattern currenPattern: patternList){
+				double [] inputs = currenPattern.getInput();
+				double [] outputs = currenPattern.getOutput();
+				
+				double [] realOutputs = configuration.getRealFunction().operate(inputs);
+				if(Math.abs(realOutputs[0] - outputs[0]) > maxError){
+					maxError = Math.abs(realOutputs[0] - outputs[0]);
+				}
+				
+				if(Math.abs(realOutputs[0] - outputs[0]) < minError){
+					minError = Math.abs(realOutputs[0] - outputs[0]);
+				}
+				averageError += Math.abs(realOutputs[0] - outputs[0]); 
+			}
+			report.setAverageError(averageError / patternList.size());
+			report.setMaxError(maxError);
+			report.setMinError(minError);
+			return report;
+		
+	}
 
 	public List<Pattern> getUniformMeshPatternList(
 			PatternListFactoryConfiguration configuration) {
@@ -78,7 +107,7 @@ public class PatternListFactory {
 
 					/* Mapping for the outputs. */
 					for (int i = 0; i < currentOutputs.length; i++) {
-						currentOutputs[i] = (currentOutputs[i] /MAX_OUTPUT);
+						currentOutputs[i] = (currentOutputs[i] / MAX_OUTPUT);
 					}
 
 					Pattern currentPattern = new Pattern(currentInputs,
@@ -101,7 +130,7 @@ public class PatternListFactory {
 
 		SigmoidFunction sigmoidFunction = configuration.getSigmoidFunction();
 		Function realFunction = configuration.getRealFunction();
-		long quantity = (long) Math.pow(configuration.getQuantity(),2);
+		long quantity = (long) Math.pow(configuration.getQuantity() + 1, 2);
 
 		if (sigmoidFunction instanceof SigmoidTanHFunctionImpl) {
 			for (long i = 0; i < quantity; i++) {
@@ -110,8 +139,7 @@ public class PatternListFactory {
 				double randomy = Math.random() * DIV_FACTOR * DIV_FACTOR
 						- MAX_Y;
 				double[] currentInputs = new double[] { randomx, randomy };
-				double[] currentOutputs = realFunction
-						.operate(currentInputs);
+				double[] currentOutputs = realFunction.operate(currentInputs);
 				/* Mapping of the inputs. */
 				for (int j = 0; j < currentInputs.length; j++) {
 					currentInputs[j] = currentInputs[j] / DIV_FACTOR;
@@ -125,7 +153,7 @@ public class PatternListFactory {
 				Pattern currentPattern = new Pattern(currentInputs,
 						currentOutputs);
 				patternList.add(currentPattern);
-				
+
 			}
 		} else if (sigmoidFunction instanceof SigmoidExponentialFunctionImpl) {
 			for (long i = 0; i < quantity; i++) {
@@ -134,8 +162,7 @@ public class PatternListFactory {
 				double randomy = Math.random() * DIV_FACTOR * DIV_FACTOR
 						- MAX_Y;
 				double[] currentInputs = new double[] { randomx, randomy };
-				double[] currentOutputs = realFunction
-						.operate(currentInputs);
+				double[] currentOutputs = realFunction.operate(currentInputs);
 				/* Mapping of the inputs. */
 				for (int j = 0; j < currentInputs.length; j++) {
 					currentInputs[j] = (currentInputs[j] + MAX_X)
@@ -144,30 +171,32 @@ public class PatternListFactory {
 
 				/* Mapping for the outputs. */
 				for (int j = 0; j < currentOutputs.length; j++) {
-					currentOutputs[j] = (currentOutputs[j] /MAX_OUTPUT );
+					currentOutputs[j] = (currentOutputs[j] / MAX_OUTPUT);
 				}
 
 				Pattern currentPattern = new Pattern(currentInputs,
 						currentOutputs);
 				patternList.add(currentPattern);
-				
+
 			}
 		}
 		return patternList;
 
 	}
-	
-	public List<Pattern> reMapList(PatternListFactoryConfiguration configuration, List<Pattern> mappedList){
+
+	public List<Pattern> reMapList(
+			PatternListFactoryConfiguration configuration,
+			List<Pattern> mappedList) {
 		List<Pattern> patternList = new ArrayList<Pattern>();
 
 		SigmoidFunction sigmoidFunction = configuration.getSigmoidFunction();
-		
-		if(sigmoidFunction instanceof SigmoidTanHFunctionImpl){
-			for(Pattern currentPattern: mappedList){
-				double []inputs = currentPattern.getInput();
-				double []outputs = currentPattern.getOutput();
-				double []newInputs = new double[inputs.length];
-				double []newOutputs = new double[outputs.length];
+
+		if (sigmoidFunction instanceof SigmoidTanHFunctionImpl) {
+			for (Pattern currentPattern : mappedList) {
+				double[] inputs = currentPattern.getInput();
+				double[] outputs = currentPattern.getOutput();
+				double[] newInputs = new double[inputs.length];
+				double[] newOutputs = new double[outputs.length];
 				/* Mapping of the inputs. */
 				for (int j = 0; j < inputs.length; j++) {
 					newInputs[j] = (inputs[j] * DIV_FACTOR);
@@ -177,65 +206,61 @@ public class PatternListFactory {
 				for (int j = 0; j < outputs.length; j++) {
 					newOutputs[j] = (outputs[j] * MAX_OUTPUT);
 				}
-				Pattern newPattern = new Pattern(newInputs,
-						newOutputs);
+				Pattern newPattern = new Pattern(newInputs, newOutputs);
 				patternList.add(newPattern);
-				
+
 			}
-		}else if(sigmoidFunction instanceof SigmoidExponentialFunctionImpl){
-			for(Pattern currentPattern: mappedList){
-				double []inputs = currentPattern.getInput();
-				double []outputs = currentPattern.getOutput();
-				double []newInputs = new double[inputs.length];
-				double []newOutputs = new double[outputs.length];
+		} else if (sigmoidFunction instanceof SigmoidExponentialFunctionImpl) {
+			for (Pattern currentPattern : mappedList) {
+				double[] inputs = currentPattern.getInput();
+				double[] outputs = currentPattern.getOutput();
+				double[] newInputs = new double[inputs.length];
+				double[] newOutputs = new double[outputs.length];
 				/* Mapping of the inputs. */
 				for (int j = 0; j < inputs.length; j++) {
-					newInputs[j] = (inputs[j] * DIV_FACTOR * DIV_FACTOR) - MAX_X;
+					newInputs[j] = (inputs[j] * DIV_FACTOR * DIV_FACTOR)
+							- MAX_X;
 				}
 
 				/* Mapping for the outputs. */
 				for (int j = 0; j < outputs.length; j++) {
 					newOutputs[j] = (outputs[j] - MAX_OUTPUT);
 				}
-				Pattern newPattern = new Pattern(newInputs,
-						newOutputs);
+				Pattern newPattern = new Pattern(newInputs, newOutputs);
 				patternList.add(newPattern);
-				
+
 			}
 		}
 		return patternList;
 	}
-	
-	public void saveToFile(List <Pattern> patternList, String fileName){
-		
-		
+
+	public void saveToFile(List<Pattern> patternList, String fileName) {
+
 		try {
 			File file = new File(fileName);
 			OutputStream fos = new FileOutputStream(file);
 			OutputStreamWriter fw = new OutputStreamWriter(fos);
-			
-	       
+
 			fw.write("\n");
-			for(Pattern currentPattern : patternList){
-				double [] inputs = currentPattern.getInput();
-				double [] outputs = currentPattern.getOutput();
-				for(int i= 0; i < inputs.length; i++){
-					fw.append(Double.toString(inputs[i])+" ");
+			for (Pattern currentPattern : patternList) {
+				double[] inputs = currentPattern.getInput();
+				double[] outputs = currentPattern.getOutput();
+				for (int i = 0; i < inputs.length; i++) {
+					fw.append(Double.toString(inputs[i]) + " ");
 				}
-				for(int i= 0; i < outputs.length; i++){
+				for (int i = 0; i < outputs.length; i++) {
 					fw.append(Double.toString(outputs[i]));
 				}
 				fw.append("\n");
-				
+
 			}
-			
+
 			fw.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
-	
+
 }
